@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/indy",
+      "destination": "https://indy-api.vercel.app/indy"
+    },
+    {
+      "source": "/api/imsa",
+      "destination": "https://indy-api.vercel.app/imsa"
+    }
+  ]
+}
