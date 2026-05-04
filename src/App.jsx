@@ -1,76 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('pt-BR', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-};
-
-const isRacePassed = (dateString) => {
-  const raceDate = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  raceDate.setHours(0, 0, 0, 0);
-  return raceDate < today;
-};
-
-const isNextRace = (raceDate, allRaces) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const futureRaces = allRaces
-    .filter((race) => {
-      const date = new Date(race.date);
-      date.setHours(0, 0, 0, 0);
-      return date >= today;
-    })
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  if (futureRaces.length === 0) return false;
-
-  const date = new Date(raceDate);
-  date.setHours(0, 0, 0, 0);
-  const nextDate = new Date(futureRaces[0].date);
-  nextDate.setHours(0, 0, 0, 0);
-
-  return date.getTime() === nextDate.getTime();
-};
+import RaceTable from './components/RaceTable';
+import { useRaces } from './hooks/useRaces';
+import { openRaceInGoogleCalendar } from './services/googleCalendarService';
 
 function App() {
-  const [races, setRaces] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
   const [category, setCategory] = useState('indy');
+  const { races, isLoading, error } = useRaces(category);
 
-  useEffect(() => {
-    const fetchRaces = async () => {
-      setIsLoading(true);
-
-      try {
-        const endpoint = category === 'indy' ? '/api/indy' : '/api/imsa';
-        const res = await fetch(endpoint);
-        if (!res.ok) {
-          throw new Error('Falha ao carregar o cronograma.');
-        }
-
-        const racesData = await res.json();
-        setRaces(racesData);
-        setError('');
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro inesperado.');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRaces();
-  }, [category]);
+  const handleAddToGoogleCalendar = (race) => {
+    openRaceInGoogleCalendar({ race, category });
+  };
 
   return (
     <div className="app-shell">
@@ -119,57 +59,10 @@ function App() {
           ) : races.length === 0 ? (
             <div className="table-state">Sem corridas encontradas.</div>
           ) : (
-            <div className="table-wrap">
-              <table className="schedule-table">
-                <thead>
-                  <tr>
-                    <th>Corrida</th>
-                    <th>Data</th>
-                    <th>Horário</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {races.map((race) => {
-                    const passed = isRacePassed(race.date);
-                    const isNext = isNextRace(race.date, races);
-                    return (
-                      <tr
-                        key={race.id}
-                        className={`${passed ? 'race-passed' : ''} ${isNext ? 'race-next' : ''}`}
-                      >
-                        <td>
-                          <span className="race-name">{race.name}</span>
-                          {passed && (
-                            <span className="race-status race-status-passed">
-                              Realizada
-                            </span>
-                          )}
-                          {isNext && (
-                            <span className="race-status race-status-next">
-                              Próxima
-                            </span>
-                          )}
-                        </td>
-                        <td>{formatDate(race.date)}</td>
-                        <td>{race.time || '-'}</td>
-                        <td className="race-action">
-                          {!passed && (
-                            <button
-                              className="race-add-btn"
-                              title="Adicionar corrida"
-                              aria-label={`Adicionar ${race.name}`}
-                            >
-                              <i className="fa-solid fa-plus" aria-hidden="true"></i>
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <RaceTable
+              races={races}
+              onAddRace={handleAddToGoogleCalendar}
+            />
           )}
         </section>
       </main>
