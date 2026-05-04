@@ -126,6 +126,7 @@ function App() {
                     <th>Corrida</th>
                     <th>Data</th>
                     <th>Horário</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -152,6 +153,17 @@ function App() {
                         </td>
                         <td>{formatDate(race.date)}</td>
                         <td>{race.time || '-'}</td>
+                        <td className="race-action">
+                          {!passed && (
+                            <button
+                              className="race-add-btn"
+                              title="Adicionar corrida"
+                              aria-label={`Adicionar ${race.name}`}
+                            >
+                              <i className="fa-solid fa-plus" aria-hidden="true"></i>
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}
