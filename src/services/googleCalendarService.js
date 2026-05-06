@@ -11,7 +11,8 @@ const formatCalendarDateTime = (date) => {
 };
 
 export const createGoogleCalendarUrl = ({ race, category }) => {
-  const eventDate = parseRaceDate(race.date);
+  const dateOnly = race.date?.split('T')[0];
+  const eventDate = parseRaceDate(dateOnly || race.date);
   const time = parseRaceTime(race.time);
 
   let dates;
