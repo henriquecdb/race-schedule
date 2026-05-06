@@ -1,5 +1,6 @@
 export const formatDate = (dateString) => {
-  const date = new Date(dateString);
+  const dateOnly = dateString?.split('T')[0];
+  const date = parseRaceDate(dateOnly || dateString);
   return date.toLocaleDateString('pt-BR', {
     weekday: 'short',
     year: 'numeric',
