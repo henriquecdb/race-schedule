@@ -22,6 +22,13 @@ function App() {
 
         <nav className="app-nav" aria-label="Primary navigation">
           <button
+            className={`nav-button ${category === 'wec' ? 'active' : ''}`}
+            onClick={() => setCategory('wec')}
+            aria-pressed={category === 'wec'}
+          >
+            WEC
+          </button>
+          <button
             className={`nav-button ${category === 'imsa' ? 'active' : ''}`}
             onClick={() => setCategory('imsa')}
             aria-pressed={category === 'imsa'}

@@ -1,5 +1,10 @@
 export const fetchRacesByCategory = async (category) => {
-  const endpoint = category === 'indy' ? '/api/indy' : '/api/imsa';
+  const endpointByCategory = {
+    indy: '/api/indy',
+    imsa: '/api/imsa',
+    wec: '/api/wec',
+  };
+  const endpoint = endpointByCategory[category] ?? '/api/imsa';
   const response = await fetch(endpoint);
 
   if (!response.ok) {

@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/wec",
+      "destination": "https://indy-api.vercel.app/wec"
+    },
+    {
       "source": "/api/indy",
       "destination": "https://indy-api.vercel.app/indy"
     },
